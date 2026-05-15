@@ -16,7 +16,7 @@ def create_vector_db(chunks):
     vector_store = Chroma.from_documents(
         documents=chunks,
         embedding=embedding_model,
-        persist_directory="vector_db"
+        persist_directory="chroma_db"
     )
     
     print("Vector database successfully created and saved locally!")

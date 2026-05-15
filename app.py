@@ -1,33 +1,26 @@
+from langchain_chroma import Chroma
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
+from langchain_huggingface import HuggingFaceEmbeddings
 from utils.loader import load_pdf
 from utils.splitter import split_documents
 from utils.vectordb import create_vector_db
 import os
 
 load_dotenv()
-docs = load_pdf("data/ReactJS.pdf")
-chunks = split_documents(docs)
-vector_db = create_vector_db(chunks)
+if os.path.exists("chroma_db"):
+    print("Loading existing vector database from 'chroma_db' directory...")
+    vector_db = Chroma(persist_directory="chroma_db", embedding_function=HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2"))    
+else:
+    docs = load_pdf("data/ReactJS.pdf")
+    chunks = split_documents(docs)
+    vector_db = create_vector_db(chunks)
 
-print("Vector database created and persisted successfully.")
+results = vector_db.max_marginal_relevance_search(
+    "What is ReactJS?",
+    k=3
+)
 
-# print(f"Total Pages Loaded: {len(docs)}")
-# print(f"Total Chunks: {len(chunks)}")
-# print("\n First Chunk:\n")
-# print(chunks[0].page_content)  # Print the first 500 characters of the first chunk
-
-# print("\n Second Chunk: \n")
-# print(chunks[1].page_content)  # Print the first 500 characters of the second chunk
-
-# print(type(chunks[0]))
-# print(chunks[0].metadata)
-
-# llm = ChatGoogleGenerativeAI(
-#     model="models/gemini-2.5-flash",
-#     google_api_key=os.getenv("GOOGLE_API_KEY")
-# )
-
-# response = llm.invoke("What is Retrieval-Augmented Generation?")
-
-# print(response.content)
+for i, result in enumerate(results):
+    print(f"\nRESULT {i+1}")
+    print(result.page_content)
