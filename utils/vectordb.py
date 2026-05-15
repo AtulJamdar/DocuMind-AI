@@ -1,23 +1,22 @@
-# from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
 
 def create_vector_db(chunks):
-    # Removed the 'models/' prefix to let the SDK construct the proper path
+
     embedding_model = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
-    print("Converting chunks to embeddings and saving to ChromaDB... Please wait.")
+    print("Creating embeddings...")
+
+
     vector_store = Chroma.from_documents(
         documents=chunks,
-        embedding=embedding_model,
-        persist_directory="chroma_db"
+        embedding=embedding_model
     )
-    
-    print("Vector database successfully created and saved locally!")
+
+    print("Vector database created successfully!")
+
     return vector_store
