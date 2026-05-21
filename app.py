@@ -22,16 +22,17 @@ if os.path.exists("chroma_db"):
     )
 
 else:
+    print("No existing vector database found.")
+    print("Please use the Streamlit app (frontend/streamlit_app.py) to upload a PDF and create a vector database.")
+    print("Run: streamlit run frontend/streamlit_app.py")
+    vector_db = None
 
-    docs = load_pdf("data/ReactJS.pdf")
-
-    chunks = split_documents(docs)
-
-    vector_db = create_vector_db(chunks)
-
-retriever = get_retriever(vector_db)
-qa_chain = create_rag_chain(retriever)
-query = input("Enter your question: ")
-response = qa_chain.invoke(query)
-print("\nAnswer:\n")
-print(response)
+if vector_db is not None:
+    retriever = get_retriever(vector_db)
+    qa_chain = create_rag_chain(retriever)
+    query = input("Enter your question: ")
+    response = qa_chain.invoke(query)
+    print("\nAnswer:\n")
+    print(response)
+else:
+    print("No vector database loaded. Please create one first by running with a valid PDF.")
